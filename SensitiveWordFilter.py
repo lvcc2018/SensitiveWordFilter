@@ -11,13 +11,27 @@ from email import header
 '''
 
 import time
+from opencc import OpenCC
 
 BLACK_WORD_PATH = './source/black_words.txt'
 STOP_WORD_PATH = './source/stop_words.txt'
 
 
 class DFAFilter(object):
-    """DFA过滤器"""
+    """基于DFA算法的敏感词过滤系统
+
+    存储敏感词表并对指定文本段进行多种匹配，包括：
+    1. 完全匹配
+    2. 过滤停顿词后的匹配
+    3. 繁简体转换后的匹配
+    4. 单字重复的匹配
+
+    Attributes:
+        black_words: 敏感词表
+        stop_words: 停顿词表
+        black_word_chains: 敏感词链表
+        delimit: 中止符
+    """
 
     def __init__(self):
         super(DFAFilter, self).__init__()
@@ -56,7 +70,20 @@ class DFAFilter(object):
                 level[self.delimit] = 0
 
     # 过滤敏感词
-    def filter_sensitive_words(self, content, replace="*"):
+    def filter_sensitive_words(self, content, replace="*", t2s=True):
+        """对指定文本进行过滤
+        
+        Args:
+            content: 文本内容
+            replace: 替换的字符，默认为"*"
+            t2s: 是否繁体转简体，默认为True。开启后，将字符转换为简体，效率大幅度降低。
+
+        Returns:
+            过滤后的文本，如果有敏感词，则替换为replace
+            过滤的敏感词列表
+        """
+        
+        
         filterd_content = ''
         black_words = []
         idx = 0
@@ -65,15 +92,18 @@ class DFAFilter(object):
             step_ins = 0
             message_chars = content[idx:]
             black_word = ''
+            last_char = ''
             for char in message_chars:
-                if char in self.stop_words:
+                simp_char = OpenCC('t2s').convert(char) if t2s else char
+                if simp_char in self.stop_words or char == last_char:
                     step_ins += 1
                     continue
-                if char in level:
+                last_char = char
+                if simp_char in level:
                     step_ins += 1
                     black_word += char
-                    if self.delimit not in level[char]:
-                        level = level[char]
+                    if self.delimit not in level[simp_char]:
+                        level = level[simp_char]
                     else:
                         black_words.append(black_word)
                         black_word = ''
