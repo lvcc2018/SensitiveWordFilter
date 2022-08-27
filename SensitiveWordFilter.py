@@ -11,7 +11,6 @@ from email import header
 '''
 
 import time
-time1 = time.time()
 
 BLACK_WORD_PATH = './source/black_words.txt'
 STOP_WORD_PATH = './source/stop_words.txt'
@@ -31,12 +30,10 @@ class DFAFilter(object):
     def read_file(self, path):
         return [i.strip() for i in open(path, 'r', encoding='utf-8').readlines()]
 
-    # 读取解析敏感词
     def parse_sensitive_words(self):
         for black_word in self.black_words:
             self.add_sensitive_words(black_word)
 
-    # 生成敏感词树
     def add_sensitive_words(self, black_word):
         black_word = black_word.lower()
         chars = black_word.strip()
@@ -79,21 +76,30 @@ class DFAFilter(object):
                         level = level[char]
                     else:
                         black_words.append(black_word)
+                        black_word = ''
                         filterd_content += replace * step_ins
                         idx += step_ins - 1
                         break
                 else:
                     filterd_content += content[idx]
+                    black_word = ''
                     break
+            if len(black_word) != 0:
+                filterd_content += content[idx]
             idx += 1
         return filterd_content, black_words
 
 
 if __name__ == "__main__":
     dfa_filter = DFAFilter()
-    filtered_content, black_words = dfa_filter.filter_sensitive_words(
-        '我没有穿内!!!!裤!!!')
-    print(filtered_content)
-    print(black_words)
-    time2 = time.time()
-    print('总共耗时:' + str(time2 - time1) + 's')
+    while True:
+        content = input('请输入要过滤的内容(q for quit)：')
+        if content == 'q':
+            break
+        start_time = time.time()
+        filtered_content, black_words = dfa_filter.filter_sensitive_words(
+            content)
+        end_time = time.time()
+        print("过滤后的内容：", filtered_content)
+        print("敏感词：", black_words)
+        print('总共耗时：' + str(end_time - start_time) + 's')
