@@ -65,17 +65,22 @@ class DFAFilter(object):
         idx = 0
         while idx < len(content):
             level = self.black_word_chains
+            step_ins = 0
             message_chars = content[idx:]
             black_word = ''
             for char in message_chars:
+                if char in self.stop_words:
+                    step_ins += 1
+                    continue
                 if char in level:
+                    step_ins += 1
                     black_word += char
                     if self.delimit not in level[char]:
                         level = level[char]
                     else:
                         black_words.append(black_word)
-                        filterd_content += replace * len(black_word)
-                        idx += len(black_word) - 1
+                        filterd_content += replace * step_ins
+                        idx += step_ins - 1
                         break
                 else:
                     filterd_content += content[idx]
@@ -87,7 +92,7 @@ class DFAFilter(object):
 if __name__ == "__main__":
     dfa_filter = DFAFilter()
     filtered_content, black_words = dfa_filter.filter_sensitive_words(
-        '你是一个王八蛋')
+        '我没有穿内!!!!裤!!!')
     print(filtered_content)
     print(black_words)
     time2 = time.time()
