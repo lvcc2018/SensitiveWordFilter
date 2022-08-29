@@ -11,11 +11,11 @@ from email import header
 '''
 
 import time
-from opencc import OpenCC
+from tqdm import tqdm
 
 BLACK_WORD_PATH = './source/black_words.txt'
 STOP_WORD_PATH = './source/stop_words.txt'
-
+T2S_PATH = './source/t2s.txt'
 
 class DFAFilter(object):
     """基于DFA算法的敏感词过滤系统
@@ -35,15 +35,20 @@ class DFAFilter(object):
 
     def __init__(self):
         super(DFAFilter, self).__init__()
-        self.black_words = self.read_file(BLACK_WORD_PATH)
-        self.stop_words = self.read_file(STOP_WORD_PATH)
+        self.black_words = self.read_list_file(BLACK_WORD_PATH)
+        self.stop_words = self.read_list_file(STOP_WORD_PATH)
+        self.t2s_dict = self.read_t2s_file(T2S_PATH)
         self.black_word_chains = {}
         self.delimit = '\x00'
         self.parse_sensitive_words()
 
-    def read_file(self, path):
+    def read_list_file(self, path):
         return [i.strip() for i in open(path, 'r', encoding='utf-8').readlines()]
-
+    
+    def read_t2s_file(self, path):
+        t2s_list = [i.strip().split('\t') for i in open(path, 'r', encoding='utf-8').readlines()]
+        return {i[0]:i[1] for i in t2s_list}
+    
     def parse_sensitive_words(self):
         for black_word in self.black_words:
             self.add_sensitive_words(black_word)
@@ -94,7 +99,7 @@ class DFAFilter(object):
             black_word = ''
             last_char = ''
             for char in message_chars:
-                simp_char = OpenCC('t2s').convert(char) if t2s else char
+                simp_char = self.t2s_dict[char] if char in self.t2s_dict.keys() else char
                 if simp_char in self.stop_words or char == last_char:
                     step_ins += 1
                     continue
@@ -119,8 +124,7 @@ class DFAFilter(object):
             idx += 1
         return filterd_content, black_words
 
-
-if __name__ == "__main__":
+def test():
     dfa_filter = DFAFilter()
     while True:
         content = input('请输入要过滤的内容(q for quit)：')
@@ -133,3 +137,29 @@ if __name__ == "__main__":
         print("过滤后的内容：", filtered_content)
         print("敏感词：", black_words)
         print('总共耗时：' + str(end_time - start_time) + 's')
+
+def test_file(path):
+    dfa_filter = DFAFilter()
+    test_data = [i.strip() for i in open('suspect_data.txt','r').readlines()]
+    result = open('result_t2s.txt','w')
+    true_num = 0
+    false_num = 0
+    start_time = time.time()
+    for data in tqdm(test_data):
+        filtered_content, black_words = dfa_filter.filter_sensitive_words(
+            data, replace='*', t2s=True)
+        if len(black_words) > 0:
+            test_result = "有敏感词"
+            true_num += 1
+        else:
+            test_result = "无敏感词"
+            false_num += 1
+        result.write(test_result + '\t' +data+'\t'+filtered_content+'\t'+' '.join(black_words)+'\n')
+    result.close()
+    end_time = time.time()
+    print('总共耗时：' + str(end_time - start_time) + 's')
+    print(true_num, false_num)
+
+
+if __name__ == "__main__":
+    test()
