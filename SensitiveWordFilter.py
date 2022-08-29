@@ -173,4 +173,7 @@ def test_file(path):
 
 
 if __name__ == "__main__":
-    test_instance('.温家宝')
+    test_instance('法轮功')
+    test_instance('法！@轮。。功')
+    test_instance('法法轮轮功功')
+    test_instance('法輪功')
