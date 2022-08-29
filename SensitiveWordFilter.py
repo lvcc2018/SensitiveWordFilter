@@ -140,6 +140,16 @@ def test():
         print("敏感词：", black_words)
         print('总共耗时：' + str(end_time - start_time) + 's')
 
+def test_instance(content):
+    dfa_filter = DFAFilter()
+    start_time = time.time()
+    filtered_content, black_words = dfa_filter.filter_sensitive_words(
+        content)
+    end_time = time.time()
+    print("过滤后的内容：", filtered_content)
+    print("敏感词：", black_words)
+    print('总共耗时：' + str(end_time - start_time) + 's')
+
 def test_file(path):
     dfa_filter = DFAFilter()
     test_data = [i.strip() for i in open('suspect_data.txt','r').readlines()]
@@ -164,4 +174,4 @@ def test_file(path):
 
 
 if __name__ == "__main__":
-    test()
+    test_instance("胡……惊涛")
