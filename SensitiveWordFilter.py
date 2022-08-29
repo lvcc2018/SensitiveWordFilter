@@ -11,6 +11,7 @@ from email import header
 '''
 
 import time
+import copy
 from tqdm import tqdm
 
 BLACK_WORD_PATH = './source/black_words.txt'
@@ -57,9 +58,9 @@ class DFAFilter(object):
         chars = black_word.strip()
         if not chars:
             return
-        for i in range(len(chars)):
-            if chars[i] in self.t2s_dict.keys():
-                chars[i] = self.t2s_dict[chars[i]]
+        # for i in range(len(chars)):
+        #     if chars[i] in self.t2s_dict.keys():
+        #         chars[i] = self.t2s_dict[chars[i]]
         level = self.black_word_chains
         for i in range(len(chars)):
             if chars[i] in level:
@@ -76,7 +77,6 @@ class DFAFilter(object):
             if i == len(chars) - 1:
                 level[self.delimit] = 0
 
-    # 过滤敏感词
     def filter_sensitive_words(self, content, replace="*", t2s=True):
         """对指定文本进行过滤
         
