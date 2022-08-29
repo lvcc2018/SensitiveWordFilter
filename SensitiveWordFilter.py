@@ -43,10 +43,10 @@ class DFAFilter(object):
         self.parse_sensitive_words()
 
     def read_list_file(self, path):
-        return [i.strip() for i in open(path, 'r', encoding='utf-8').readlines()]
+        return [i[:-1] for i in open(path, 'r', encoding='utf-8').readlines()]
     
     def read_t2s_file(self, path):
-        t2s_list = [i.strip().split('\t') for i in open(path, 'r', encoding='utf-8').readlines()]
+        t2s_list = [i[:-1].split('\t') for i in open(path, 'r', encoding='utf-8').readlines()]
         return {i[0]:i[1] for i in t2s_list}
     
     def parse_sensitive_words(self):
@@ -54,10 +54,12 @@ class DFAFilter(object):
             self.add_sensitive_words(black_word)
 
     def add_sensitive_words(self, black_word):
-        black_word = black_word.lower()
         chars = black_word.strip()
         if not chars:
             return
+        for i in range(len(chars)):
+            if chars[i] in self.t2s_dict.keys():
+                chars[i] = self.t2s_dict[chars[i]]
         level = self.black_word_chains
         for i in range(len(chars)):
             if chars[i] in level:
