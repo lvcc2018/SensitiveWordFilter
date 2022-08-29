@@ -11,7 +11,6 @@ from email import header
 '''
 
 import time
-import copy
 from tqdm import tqdm
 
 BLACK_WORD_PATH = './source/black_words.txt'
@@ -102,7 +101,7 @@ class DFAFilter(object):
             last_char = ''
             for char in message_chars:
                 simp_char = self.t2s_dict[char] if char in self.t2s_dict.keys() else char
-                if simp_char in self.stop_words or char == last_char:
+                if simp_char in self.stop_words and step_ins != 0 or char == last_char:
                     step_ins += 1
                     continue
                 last_char = char
@@ -152,7 +151,7 @@ def test_instance(content):
 
 def test_file(path):
     dfa_filter = DFAFilter()
-    test_data = [i.strip() for i in open('suspect_data.txt','r').readlines()]
+    test_data = [i.strip() for i in open(path,'r').readlines()]
     result = open('result_t2s.txt','w')
     true_num = 0
     false_num = 0
@@ -174,4 +173,4 @@ def test_file(path):
 
 
 if __name__ == "__main__":
-    test_instance("胡……惊涛")
+    test_instance('.温家宝')
