@@ -125,7 +125,7 @@ class DFAFilter(object):
             idx += 1
         return filterd_content, black_words
 
-def test():
+def test_interact():
     dfa_filter = DFAFilter()
     while True:
         content = input('请输入要过滤的内容(q for quit)：')
@@ -173,7 +173,8 @@ def test_file(path):
 
 
 if __name__ == "__main__":
-    test_instance('法轮功')
-    test_instance('法！@轮。。功')
-    test_instance('法法轮轮功功')
-    test_instance('法輪功')
+    # test_instance('法轮功')
+    # test_instance('法！@轮。。功')
+    # test_instance('法法轮轮功功')
+    # test_instance('法輪功')
+    test_file('./label_data/测试数据.txt')

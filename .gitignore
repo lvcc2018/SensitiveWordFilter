@@ -130,3 +130,12 @@ dmypy.json
 
 label_data/
 .DS_Store
+source/black_words_all.txt
+source/black_words_filtered.txt
+source/black_words_old.txt
+source/sensitive_words_tencent.txt
+source/t2s_old.txt
+source/vocab_filtered_by_api.txt
+source/black_words_t2s.txt
+result.txt
+
