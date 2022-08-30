@@ -173,8 +173,7 @@ def test_file(path):
 
 
 if __name__ == "__main__":
-    # test_instance('法轮功')
-    # test_instance('法！@轮。。功')
-    # test_instance('法法轮轮功功')
-    # test_instance('法輪功')
-    test_file('./label_data/测试数据.txt')
+    test_instance('法轮功')
+    test_instance('法！@轮。。功')
+    test_instance('法法轮轮功功')
+    test_instance('法輪功')
