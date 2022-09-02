@@ -152,10 +152,11 @@ def test_instance(content):
 def test_file(path):
     dfa_filter = DFAFilter()
     test_data = [i.strip() for i in open(path,'r').readlines()]
-    result = open('result_t2s.txt','w')
+    result = open('test_data/result_wantwords.txt','w')
     true_num = 0
     false_num = 0
     start_time = time.time()
+    black_words_dict = {}
     for data in tqdm(test_data):
         filtered_content, black_words = dfa_filter.filter_sensitive_words(
             data, replace='*', t2s=True)
@@ -165,11 +166,20 @@ def test_file(path):
         else:
             test_result = "无敏感词"
             false_num += 1
-        result.write(test_result + '\t' +data+'\t'+filtered_content+'\t'+' '.join(black_words)+'\n')
+        result.write(test_result + '\t' +data+'\t'+' '.join(black_words)+'\n')
+        for b in black_words:
+            if b not in black_words_dict:
+                black_words_dict[b] = 0
+            black_words_dict[b] += 1
     result.close()
     end_time = time.time()
     print('总共耗时：' + str(end_time - start_time) + 's')
     print(true_num, false_num)
+    f = open('test_data/black_words_wantwords.txt','w')
+    black_words_dict = sorted(black_words_dict.items(), key=lambda x: x[1], reverse=True)
+    for i in black_words_dict:
+        f.write(i[0]+'\t'+str(i[1])+'\n')
+    f.close()
 
 
 if __name__ == "__main__":

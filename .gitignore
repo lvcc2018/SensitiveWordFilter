@@ -138,4 +138,5 @@ source/t2s_old.txt
 source/vocab_filtered_by_api.txt
 source/black_words_t2s.txt
 result.txt
+test_data/
 
