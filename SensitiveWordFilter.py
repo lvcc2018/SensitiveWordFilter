@@ -88,8 +88,6 @@ class DFAFilter(object):
             过滤后的文本，如果有敏感词，则替换为replace
             过滤的敏感词列表
         """
-        
-        
         filterd_content = ''
         black_words = []
         idx = 0
@@ -101,7 +99,7 @@ class DFAFilter(object):
             last_char = ''
             for char in message_chars:
                 simp_char = self.t2s_dict[char] if char in self.t2s_dict.keys() else char
-                if simp_char in self.stop_words and step_ins != 0 or char == last_char:
+                if simp_char in self.stop_words and step_ins != 0:
                     step_ins += 1
                     continue
                 last_char = char
@@ -183,7 +181,4 @@ def test_file(path):
 
 
 if __name__ == "__main__":
-    test_instance('法轮功')
-    test_instance('法！@轮。。功')
-    test_instance('法法轮轮功功')
-    test_instance('法輪功')
+    test_interact()
