@@ -24,7 +24,6 @@ class DFAFilter(object):
     1. 完全匹配
     2. 过滤停顿词后的匹配
     3. 繁简体转换后的匹配
-    4. 单字重复的匹配
 
     Attributes:
         black_words: 敏感词表
@@ -96,13 +95,11 @@ class DFAFilter(object):
             step_ins = 0
             message_chars = content[idx:]
             black_word = ''
-            last_char = ''
             for char in message_chars:
                 simp_char = self.t2s_dict[char] if char in self.t2s_dict.keys() else char
                 if simp_char in self.stop_words and step_ins != 0:
                     step_ins += 1
                     continue
-                last_char = char
                 if simp_char in level:
                     step_ins += 1
                     black_word += char
